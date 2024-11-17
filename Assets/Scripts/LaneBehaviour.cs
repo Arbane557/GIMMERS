@@ -12,6 +12,7 @@ public class LaneBehaviour : MonoBehaviour
     {
         public GameObject LaneRend;
         public GameObject LaneCol;
+        public GameObject LaneAnim;
     }
     [SerializeField]
     private List<Lanes> Lane;
@@ -27,7 +28,7 @@ public class LaneBehaviour : MonoBehaviour
             foreach (Lanes go in Lane)
             {
                 bool val = (Random.Range(0, 2) == 0);            
-                if (redlaneCount < 1 && val) {
+                if (redlaneCount < 4 && val) {
                     redlaneCount++;
                     go.LaneRend.SetActive(val);                  
                 }   
@@ -41,33 +42,46 @@ public class LaneBehaviour : MonoBehaviour
                     col.LaneCol.SetActive(true);
                     col.LaneCol.GetComponent<HitCollider>().isChase = true;
                 }
-                yield return new WaitForSeconds(6);
+                yield return new WaitForSeconds(3);
                 foreach (Lanes col in Lane)
                 {
                     col.LaneCol.GetComponent<HitCollider>().isChase = false;
-                    col.LaneCol.SetActive(false);              
+                    col.LaneCol.SetActive(false);
                 }
-                yield return new WaitForSeconds(2);
-                foreach (Lanes col in Lane) col.LaneRend.SetActive(false);
+                foreach (Lanes col in Lane)
+                {
+                    if (col.LaneRend.gameObject.activeSelf)
+                    {
+                        col.LaneRend.SetActive(false);
+                        yield return new WaitForSeconds(0.5f);
+                        col.LaneAnim.SetActive(true); col.LaneCol.SetActive(true);
+                        yield return new WaitForSeconds(0.2f);
+                        col.LaneCol.SetActive(false);
+                        yield return new WaitForSeconds(1);
+                        col.LaneAnim.SetActive(false);
+                    }
+                }
             }
             else
             {
-                yield return new WaitForSeconds(3);
+                yield return new WaitForSeconds(1);
                 foreach (Lanes col in Lane)
                 {
                     if (col.LaneRend.gameObject.activeSelf) col.LaneRend.GetComponent<RawImage>().enabled = false;
                 }
-                yield return new WaitForSeconds(1.2f);
+                yield return new WaitForSeconds(0.5f);
                 foreach (Lanes col in Lane)
                 {
                     if (col.LaneRend.gameObject.activeSelf)
-                        col.LaneCol.SetActive(true);
+                    { col.LaneCol.SetActive(true); col.LaneAnim.SetActive(true); }
                     col.LaneRend.GetComponent<RawImage>().enabled = true;
                     col.LaneRend.SetActive(false);
                 }
-                yield return new WaitForSeconds(0.01f);
+                yield return new WaitForSeconds(0.2f);
                 foreach (Lanes col in Lane) col.LaneCol.SetActive(false);
+                yield return new WaitForSeconds(1f);
+                foreach (Lanes col in Lane) col.LaneAnim.SetActive(false);
             }
-        }
+            }
     }
  }

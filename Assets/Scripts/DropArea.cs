@@ -11,7 +11,6 @@ public class DropArea : MonoBehaviour
     }
     private void OnMouseEnter()
     {
-        Debug.Log("enter");
         cb.isDragging = false;
     }
 }
