@@ -33,9 +33,10 @@ public class CandleBehaviour : MonoBehaviour
     [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private GameObject EndScreen;
     [SerializeField] private GameObject UImain;
-    private int counter;
+    private float counter;
     private void Start()
     {
+        counter = 5;
         healCooldown = 0;
         upScaled = transform.localScale * 1.2f;
         normalScale = transform.localScale;
@@ -45,7 +46,7 @@ public class CandleBehaviour : MonoBehaviour
     private void Update()
     {
         timeSpent += Time.deltaTime;
-        timerText.text = "" + timeSpent;
+        //timerText.text = "" + timeSpent;
         if (timeSpent > 300)
         {
             GetComponent<SpriteRenderer>().enabled = false;
@@ -54,11 +55,11 @@ public class CandleBehaviour : MonoBehaviour
             EndScreen.SetActive(true);
             EndScreen.SetActive(true);
             EndScreen.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "You survived the corridor";
-            counter = 5;
-            counter -= Convert.ToInt32(Time.deltaTime); ;
-            EndScreen.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = "Returning in " + counter;
+            counter -= Time.deltaTime;
+            EndScreen.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = "Returning in " + Mathf.RoundToInt(counter);
             if (counter <= 0) SceneManager.LoadScene(0);
         }
+        if(CandleLight!=null)
         CandleLight.transform.position = new Vector2(transform.position.x, CandleLight.transform.position.y);
         if (healCooldown < 30)
         {
@@ -71,9 +72,8 @@ public class CandleBehaviour : MonoBehaviour
             UImain.SetActive(false);
             EndScreen.SetActive(true);
             EndScreen.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "You are devoured by the corridor";
-            counter = 5;
-            counter -= Convert.ToInt32(Time.deltaTime); ;
-            EndScreen.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = "Returning in " + counter;
+            counter -= Time.deltaTime; 
+            EndScreen.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = "Returning in " + Mathf.RoundToInt(counter);
             if (counter <= 0) SceneManager.LoadScene(0);
         }
         else if (HealthPoints <= 3) ChangeBG.texture = BGStage[3];
