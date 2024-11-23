@@ -12,13 +12,12 @@ using Unity.VisualScripting;
 using System;
 using UnityEngine.SceneManagement;
 using UnityEngine.Rendering;
-using Unity.PlasticSCM.Editor.WebApi;
+using Unity.Mathematics;
 public class CandleBehaviour : MonoBehaviour
 {
     private Vector3 upScaled;
     private Vector3 normalScale;
     private float normalhealScale;
-    private Vector3 offsetToCenter;
     private Vector3 mousepos;
     public bool isDragging;
     private float TimeToHold;
@@ -32,6 +31,7 @@ public class CandleBehaviour : MonoBehaviour
     public GameObject CandleLight;
     private float healCooldown;
     public float currentHeal;
+    [SerializeField]
     private float timeSpent;
     [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private GameObject EndScreen;
@@ -51,10 +51,16 @@ public class CandleBehaviour : MonoBehaviour
     [SerializeField] private GameObject fire3;
     public GameObject currFire;
     [SerializeField] private GameObject spawnFlare;
+    [SerializeField] private GameObject volumeBeat;
+    [SerializeField] AudioSource aud;
+    [SerializeField] AudioClip clips;
+    [SerializeField] AudioClip clicks;
+    [SerializeField] AudioClip[] growl;
+
     private void Start()
     {
         StartCoroutine(Beating());
-        counter = 5;
+        counter = 10;
         healCooldown = -1;
         currentHeal = 0;
         upScaled = transform.localScale * 1.2f;
@@ -67,14 +73,16 @@ public class CandleBehaviour : MonoBehaviour
         if (!QTE)
         {
             timerText.text = "" + timeSpent;
-            if (timeSpent > 300)
+            if (timeSpent >= 200)
             {
-                GetComponent<SpriteRenderer>().enabled = false;
-                Destroy(CandleLight);
+                spawnFlare.SetActive(false);
+                timeSpent = 200;
+                currFire.GetComponent<SpriteRenderer>().enabled = false;
+                CandleLight.GetComponent<SpriteRenderer>().enabled = false;
                 UImain.SetActive(false);
                 EndScreen.SetActive(true);
                 EndScreen.SetActive(true);
-                EndScreen.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "You survived the corridor";
+                EndScreen.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "You Survived The Corridor";
                 counter -= Time.deltaTime;
                 EndScreen.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = "Returning in " + Mathf.RoundToInt(counter);
                 if (counter <= 0) SceneManager.LoadScene(0);
@@ -88,19 +96,20 @@ public class CandleBehaviour : MonoBehaviour
             }
             if (HealthPoints <= 0)
             {
-                //Destroy(heartFill.gameObject.transform.parent.gameObject);
-                GetComponent<SpriteRenderer>().enabled = false; Destroy(CandleLight);
+                spawnFlare.SetActive(false);
+                currFire.GetComponent<SpriteRenderer>().enabled = false;
+                CandleLight.GetComponent<SpriteRenderer>().enabled = false;
                 ChangeBG.texture = BGStage[4];
                 UImain.SetActive(false);
                 EndScreen.SetActive(true);
-                EndScreen.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "You are devoured by the corridor";
+                EndScreen.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = $"You Only Survived {timeSpent} Hearbeats";
                 counter -= Time.deltaTime;
-                EndScreen.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = "Returning in " + Mathf.RoundToInt(counter);
+                EndScreen.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = $"Returning in {Mathf.RoundToInt(counter)}";
                 if (counter <= 0) SceneManager.LoadScene(0);
             }
-            else if (HealthPoints <= 3) { ChangeBG.texture = BGStage[3]; heartFill.texture = fill4; currFire = fire3; fire3.SetActive(true); fire2.SetActive(false); fire1.SetActive(false); }
-            else if (HealthPoints <= 5) { ChangeBG.texture = BGStage[2]; ChangeFG.SetActive(true); heartFill.texture = fill3; currFire = fire2; fire2.SetActive(true); fire1.SetActive(false); fire3.SetActive(false); }
-            else if (HealthPoints <= 7) { ChangeBG.texture = BGStage[1]; ChangeFG.SetActive(false); heartFill.texture = fill2; currFire = fire1; fire1.SetActive(true); fire2.SetActive(false); fire3.SetActive(false); }
+            else if (HealthPoints <= 3) { aud.PlayOneShot(growl[UnityEngine.Random.Range(0,growl.Length)]); ChangeBG.texture = BGStage[3]; heartFill.texture = fill4; currFire = fire3; fire3.SetActive(true); fire2.SetActive(false); fire1.SetActive(false); }
+            else if (HealthPoints <= 5) { aud.PlayOneShot(growl[UnityEngine.Random.Range(0, growl.Length)]); ChangeBG.texture = BGStage[2]; ChangeFG.SetActive(true); heartFill.texture = fill3; currFire = fire2; fire2.SetActive(true); fire1.SetActive(false); fire3.SetActive(false); }
+            else if (HealthPoints <= 7) { aud.PlayOneShot(growl[UnityEngine.Random.Range(0, growl.Length)]); ChangeBG.texture = BGStage[1]; ChangeFG.SetActive(false); heartFill.texture = fill2; currFire = fire1; fire1.SetActive(true); fire2.SetActive(false); fire3.SetActive(false); }
             else if (HealthPoints <= 9) { ChangeBG.texture = BGStage[0]; heartFill.texture = fill1; }
             if (healCooldown >= 30 && HealthPoints < 10) { HealthPoints += 2; healCooldown = -1; currentHeal = 0; }
             mousepos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -112,7 +121,7 @@ public class CandleBehaviour : MonoBehaviour
                 transform.position = new Vector3(mousepos.x, mousepos.y, transform.position.z);
             }
             else transform.localScale = normalScale;
-
+            if (Input.GetMouseButtonDown(0)) aud.PlayOneShot(clicks);
         }
     }
     IEnumerator Beating()
@@ -120,16 +129,23 @@ public class CandleBehaviour : MonoBehaviour
         while (true)
         {
             yield return new WaitForSeconds(0.5f);
-            timeSpent += 1;
-            yield return new WaitForSeconds(1f);
+            aud.PlayOneShot(clips);
+            if (HealthPoints > 0) timeSpent += 1;
+            volumeBeat.SetActive(true);
+            yield return new WaitForSeconds(0.1f);
+            volumeBeat.SetActive(false);
+            yield return new WaitForSeconds(0.1f);
+            volumeBeat.SetActive(true);
+            yield return new WaitForSeconds(0.1f);
+            volumeBeat.SetActive(false);
+            yield return new WaitForSeconds(0.7f);
         }
     }
     void OnMouseDown()
     {
         TimeToHold = 0;
         isDragging = true;
-    }
-    
+    } 
     private void OnMouseUp()
     {
         isDragging = false;

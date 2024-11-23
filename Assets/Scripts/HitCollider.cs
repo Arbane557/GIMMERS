@@ -7,6 +7,8 @@ public class HitCollider : MonoBehaviour
     [SerializeField] private GameObject Lanerends;
     [SerializeField] private Color hurtColor;
     [SerializeField] private Color normal;
+    [SerializeField] AudioSource aud;
+    [SerializeField] AudioClip hurtsound;
     public bool isChase;
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -33,6 +35,7 @@ public class HitCollider : MonoBehaviour
         yield return new WaitForSeconds(0.1f);
         cdl.GetComponent<CandleBehaviour>().currFire.GetComponent<SpriteRenderer>().color = normal;
         cdl.GetComponent<CandleBehaviour>().HealthPoints -= 1;
+        aud.PlayOneShot(hurtsound);
         Debug.Log("hit");
         cdl.GetComponent<CandleBehaviour>().hitCounter += 1;
 

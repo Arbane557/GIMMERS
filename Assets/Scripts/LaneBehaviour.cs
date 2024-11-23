@@ -17,6 +17,8 @@ public class LaneBehaviour : MonoBehaviour
     [SerializeField]
     private List<Lanes> Lane;
     [SerializeField] int redlaneCount = 0;
+    [SerializeField] AudioClip[] atkwind;
+    [SerializeField] AudioSource aud;
     private void Start()
     {
         StartCoroutine(generateLanes());
@@ -48,6 +50,7 @@ public class LaneBehaviour : MonoBehaviour
                     col.LaneCol.GetComponent<HitCollider>().isChase = false;
                     col.LaneCol.SetActive(false);
                 }
+                aud.PlayOneShot(atkwind[Random.Range(0, atkwind.Length)]);
                 foreach (Lanes col in Lane)
                 {
                     if (col.LaneRend.gameObject.activeSelf)
@@ -69,6 +72,7 @@ public class LaneBehaviour : MonoBehaviour
                 {
                     if (col.LaneRend.gameObject.activeSelf) col.LaneRend.GetComponent<RawImage>().enabled = false;
                 }
+                if (redlaneCount > 0) aud.PlayOneShot(atkwind[Random.Range(0, atkwind.Length)]);
                 yield return new WaitForSeconds(0.5f);
                 foreach (Lanes col in Lane)
                 {
