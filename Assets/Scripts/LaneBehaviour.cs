@@ -28,7 +28,7 @@ public class LaneBehaviour : MonoBehaviour
             foreach (Lanes go in Lane)
             {
                 bool val = (Random.Range(0, 2) == 0);            
-                if (redlaneCount < 4 && val) {
+                if (redlaneCount < 3 && val) {
                     redlaneCount++;
                     go.LaneRend.SetActive(val);                  
                 }   

@@ -28,10 +28,13 @@ public class HitCollider : MonoBehaviour
     }
     IEnumerator Hit(GameObject collision)
     {
-        collision.gameObject.GetComponent<CandleBehaviour>().HealthPoints -= 1;
-        collision.gameObject.GetComponent<SpriteRenderer>().color = hurtColor;
+        var cdl = collision.gameObject;
+        cdl.GetComponent<CandleBehaviour>().currFire.GetComponent<SpriteRenderer>().color = hurtColor;
         yield return new WaitForSeconds(0.1f);
-        collision.gameObject.GetComponent<SpriteRenderer>().color = normal;
+        cdl.GetComponent<CandleBehaviour>().currFire.GetComponent<SpriteRenderer>().color = normal;
+        cdl.GetComponent<CandleBehaviour>().HealthPoints -= 1;
+        Debug.Log("hit");
+        cdl.GetComponent<CandleBehaviour>().hitCounter += 1;
 
     }
 }

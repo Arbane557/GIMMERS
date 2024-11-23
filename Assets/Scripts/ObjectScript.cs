@@ -7,37 +7,27 @@ using UnityEngine;
 
 public class ObjectScript : MonoBehaviour
 {
-   public Sprite[] sprites;
-   private int oldSprite;
-   private int newSprite;
-   private List<int> availableSprites = new List<int>();
+    [SerializeField]
+    private Sprite newSprite;
+    private GameObject candle;
 
-   public float hitPoints;
-
-   void Start()
-   {
-    oldSprite = 0;
-
-    for (int i = 0; i < sprites.Length; i++)
+    private void Start()
     {
-        availableSprites.Add(i);
+        StartCoroutine(decay());
     }
-   }
-
-   public void Picked(float damage)
-   {
-    hitPoints -= damage;
-    if (hitPoints <= 0)
+    private void OnMouseDown()
     {
+        candle = GameObject.FindGameObjectWithTag("candle");
+        Picked();
+    }
+    public void Picked()
+    {
+        candle.GetComponent<CandleBehaviour>().currentHeal += 5;
         Destroy(this.gameObject);
-        GameObject.Find("SpawnHandler").GetComponent<SpawnHandler>().SpawnNewObject();
     }
-    availableSprites.Remove(oldSprite);
-    newSprite = availableSprites[Random.Range(0,availableSprites.Count)];
-
-    GetComponent<SpriteRenderer>().sprite = sprites[newSprite];
-
-    availableSprites.Add(oldSprite);
-    oldSprite = newSprite;
-   }
+    IEnumerator decay()
+    {
+        yield return new WaitForSeconds(3);
+        Destroy(this.gameObject);
+    }
 }
