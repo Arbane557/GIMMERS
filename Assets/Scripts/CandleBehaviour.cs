@@ -15,50 +15,52 @@ using UnityEngine.Rendering;
 using Unity.Mathematics;
 public class CandleBehaviour : MonoBehaviour
 {
+// Deklarasi variabel untuk  lilin dan status lainnya
     private Vector3 upScaled;
     private Vector3 normalScale;
     private float normalhealScale;
     private Vector3 mousepos;
-    public bool isDragging;
-    private float TimeToHold;
-    public int HealthPoints = 10;
+    public bool isDragging; // Status apakah lilin sedang di-drag
+    private float TimeToHold; // Waktu untuk menghitung durasi drag
+    public int HealthPoints = 10; // Poin kesehatan lilin
     [SerializeField]
-    private List<Texture2D> BGStage;
+    private List<Texture2D> BGStage; // Background untuk berbagai tahap
     [SerializeField]
-    private RawImage ChangeBG;
-    [SerializeField] private GameObject ChangeFG;
-    [SerializeField] private GameObject HealBar;
-    public GameObject CandleLight;
-    private float healCooldown;
-    public float currentHeal;
+    private RawImage ChangeBG; // Gambar latar belakang yang akan diubah
+    [SerializeField] private GameObject ChangeFG; // Foreground yang diubah
+    [SerializeField] private GameObject HealBar; // UI Health Bar
+    public GameObject CandleLight; // Objek lilin
+    private float healCooldown; // Cooldown untuk penyembuhan
+    public float currentHeal; // Progres penyembuhan
     [SerializeField]
-    private float timeSpent;
-    [SerializeField] private TextMeshProUGUI timerText;
-    [SerializeField] private GameObject EndScreen;
-    [SerializeField] private GameObject UImain;
-    private float counter;
-    public int hitCounter;
-    private bool QTE;
+    private float timeSpent; // Waktu yang telah berjalan
+    [SerializeField] private TextMeshProUGUI timerText; // Teks untuk menampilkan waktu
+    [SerializeField] private GameObject EndScreen; // UI layar akhir
+    [SerializeField] private GameObject UImain; // UI utama
+    private float counter; // Hitung mundur untuk kembali ke menu
+    public int hitCounter; // Hitungan pukulan
+    private bool QTE; // Status Quick Time Event
     [SerializeField]
-    private GameObject CamObj;
-    [SerializeField] private RawImage heartFill;
-    [SerializeField] private Texture2D fill1;
-    [SerializeField] private Texture2D fill2;
-    [SerializeField] private Texture2D fill3;
-    [SerializeField] private Texture2D fill4;
-    [SerializeField] private GameObject fire1;
-    [SerializeField] private GameObject fire2;
-    [SerializeField] private GameObject fire3;
-    public GameObject currFire;
-    [SerializeField] private GameObject spawnFlare;
-    [SerializeField] private GameObject volumeBeat;
-    [SerializeField] AudioSource aud;
-    [SerializeField] AudioClip clips;
+    private GameObject CamObj; // Objek kamera
+    [SerializeField] private RawImage heartFill; // Ikon pengisian hati
+    [SerializeField] private Texture2D fill1; // Tekstur untuk level kesehatan 1
+    [SerializeField] private Texture2D fill2; // Tekstur untuk level kesehatan 2
+    [SerializeField] private Texture2D fill3; // Tekstur untuk level kesehatan 3
+    [SerializeField] private Texture2D fill4; // Tekstur untuk level kesehatan 4
+    [SerializeField] private GameObject fire1; // Level nyala api lilin 1
+    [SerializeField] private GameObject fire2; // Level nyala api lilin 2
+    [SerializeField] private GameObject fire3; // Level nyala api lilin 3
+    public GameObject currFire; // Api aktif saat ini
+    [SerializeField] private GameObject spawnFlare; // Efek flare
+    [SerializeField] private GameObject volumeBeat; // Efek  beat
+    [SerializeField] AudioSource aud; // Sumber audio
+    [SerializeField] AudioClip clips; // Klip audio
     [SerializeField] AudioClip clicks;
-    [SerializeField] AudioClip[] growl;
+    [SerializeField] AudioClip[] growl; // Array klip suara
 
     private void Start()
     {
+    // Inisialisasi variabel dan memulai efek audio detak jantung
         StartCoroutine(Beating());
         counter = 10;
         healCooldown = -1;
@@ -70,11 +72,14 @@ public class CandleBehaviour : MonoBehaviour
   
     private void Update()
     {
+    // Periksa apakah Quick Time Event sedang aktif
         if (!QTE)
         {
             timerText.text = "" + timeSpent;
+             // Periksa apakah waktu telah habis
             if (timeSpent >= 200)
             {
+            // Logika akhir permainan
                 spawnFlare.SetActive(false);
                 timeSpent = 200;
                 currFire.GetComponent<SpriteRenderer>().enabled = false;
@@ -141,13 +146,15 @@ public class CandleBehaviour : MonoBehaviour
             yield return new WaitForSeconds(0.7f);
         }
     }
-    void OnMouseDown()
+    void OnMouseDown() 
     {
+    // Aktifkan status drag saat mouse ditekan
         TimeToHold = 0;
         isDragging = true;
     } 
     private void OnMouseUp()
     {
+    // Nonaktifkan status drag saat mouse dilepass
         isDragging = false;
     }
 }

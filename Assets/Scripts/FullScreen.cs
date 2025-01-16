@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class FullScreen : MonoBehaviour
+public class GameOverMainMenu : MonoBehaviour
 {
-    public void Change()
+    // Script gameover, di mana game akan berhenti total ketika player burung menabrak obstacle
+    public void GameOver()
     {
-        Screen.fullScreen = !Screen.fullScreen;
-        print("Changed Screen Mode");
+        SceneManager.LoadSceneAsync(0);
     }
+
 }
