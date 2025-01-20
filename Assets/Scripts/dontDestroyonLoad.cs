@@ -2,6 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Script untuk memastikan objek tidak dihancurkan saat pergantian scene
 public class dontDestroyonLoad : MonoBehaviour
-// Menjaga objek tetap ada meskipun scene berganti
-{void Awake(){DontDestroyOnLoad(this.gameObject);}}
+{
+    // Dipanggil sebelum objek aktif pertama kali
+    void Awake()
+    {
+        // Mencegah penghancuran objek ini saat pergantian scene
+        DontDestroyOnLoad(this.gameObject);
+    }
+}
